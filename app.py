@@ -1,14 +1,30 @@
 from flask import Flask, render_template, request
 import pickle
 import requests
-
+import os
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 app = Flask(__name__)
 
 # ===========================
 # LOAD MODEL FILES
 # ===========================
 movies = pickle.load(open("models/movies.pkl", "rb"))
-similarity = pickle.load(open("models/similarity.pkl", "rb"))
+
+if os.path.exists("models/similarity.pkl"):
+    similarity = pickle.load(open("models/similarity.pkl", "rb"))
+else:
+    print("similarity.pkl not found. Recreating similarity matrix...")
+
+    df = pd.read_csv("data/movie_features.csv")
+
+    cv = CountVectorizer(max_features=5000, stop_words="english")
+    vectors = cv.fit_transform(df["tags"]).toarray()
+
+    similarity = cosine_similarity(vectors)
+
+    print("Similarity matrix created successfully!")
 
 # ===========================
 # TMDB POSTER FUNCTION
