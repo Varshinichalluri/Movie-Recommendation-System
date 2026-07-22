@@ -14,32 +14,55 @@
 
 <div class="container">
 
+    <div class="hero">
+
     <h1>🎬 Movie Recommendation System</h1>
 
-    <p class="subtitle">
-        Discover movies similar to your favorites.
+    <p>
+        Discover your next favorite movie with AI-powered recommendations.
     </p>
+
+</div>
 
     <form method="POST">
 
-        <select name="movie" required>
+        <input
+    type="text"
+    name="movie"
+    list="movies"
+    placeholder="🔍 Search for a movie..."
+    autocomplete="off"
+    required
+>
 
-            <option value="">Select a Movie</option>
+<datalist id="movies">
 
-            {% for movie in movie_titles %}
+    {% for movie in movie_titles %}
 
-            <option value="{{ movie }}">{{ movie }}</option>
+    <option value="{{ movie }}">
 
-            {% endfor %}
+    {% endfor %}
 
-        </select>
+</datalist>
 
         <button type="submit">
             Recommend
         </button>
 
     </form>
+{% if selected_poster %}
 
+<div class="selected-movie">
+
+    <h2>🎬 Selected Movie</h2>
+
+    <img src="{{ selected_poster }}" alt="Selected Movie Poster">
+
+    <h3>{{ request.form.get('movie') }}</h3>
+
+</div>
+
+{% endif %}
     {% if recommendations %}
 
     <div class="results">
@@ -48,17 +71,23 @@
 
         <div class="movie-grid">
 
-            {% for movie, poster in zip(recommendations, posters) %}
+            {% for movie, poster, detail in zip(recommendations, posters, details) %}
 
-            <div class="movie-card">
+<div class="movie-card">
 
-                <img src="{{ poster }}" alt="{{ movie }}">
+    <img src="{{ poster }}" alt="{{ movie }}">
 
-                <h3>{{ movie }}</h3>
+    <h3>{{ movie }}</h3>
 
-            </div>
+    <p>⭐ {{ detail.rating }}</p>
 
-            {% endfor %}
+    <p>📅 {{ detail.year }}</p>
+
+    <p>🎭 {{ detail.genre }}</p>
+
+</div>
+
+{% endfor %}
 
         </div>
 
